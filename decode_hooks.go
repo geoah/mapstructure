@@ -17,10 +17,11 @@ func typedDecodeHook(h DecodeHookFunc) DecodeHookFunc {
 	var f1 DecodeHookFuncType
 	var f2 DecodeHookFuncKind
 	var f3 DecodeHookFuncValue
+	var f4 DecodeHookFuncTypeContext
 
 	// Fill in the variables into this interface and the rest is done
 	// automatically using the reflect package.
-	potential := []interface{}{f1, f2, f3}
+	potential := []interface{}{f1, f2, f3, f4}
 
 	v := reflect.ValueOf(h)
 	vt := v.Type()
@@ -39,11 +40,16 @@ func typedDecodeHook(h DecodeHookFunc) DecodeHookFunc {
 // that took reflect.Kind instead of reflect.Type.
 func DecodeHookExec(
 	raw DecodeHookFunc,
-	from reflect.Value, to reflect.Value) (interface{}, error) {
+	from reflect.Value,
+	to reflect.Value,
+	ctx *DecodeContext,
+) (interface{}, error) {
 
 	switch f := typedDecodeHook(raw).(type) {
 	case DecodeHookFuncType:
 		return f(from.Type(), to.Type(), from.Interface())
+	case DecodeHookFuncTypeContext:
+		return f(from.Type(), to.Type(), from.Interface(), ctx)
 	case DecodeHookFuncKind:
 		return f(from.Kind(), to.Kind(), from.Interface())
 	case DecodeHookFuncValue:
@@ -59,12 +65,12 @@ func DecodeHookExec(
 // The composed funcs are called in order, with the result of the
 // previous transformation.
 func ComposeDecodeHookFunc(fs ...DecodeHookFunc) DecodeHookFunc {
-	return func(f reflect.Value, t reflect.Value) (interface{}, error) {
+	return func(f reflect.Value, t reflect.Value, ctx *DecodeContext) (interface{}, error) {
 		var err error
 		var data interface{}
 		newFrom := f
 		for _, f1 := range fs {
-			data, err = DecodeHookExec(f1, newFrom, t)
+			data, err = DecodeHookExec(f1, newFrom, t, ctx)
 			if err != nil {
 				return nil, err
 			}

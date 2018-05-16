@@ -26,7 +26,7 @@ func TestComposeDecodeHookFunc(t *testing.T) {
 	f := ComposeDecodeHookFunc(f1, f2)
 
 	result, err := DecodeHookExec(
-		f, reflect.ValueOf(""), reflect.ValueOf([]byte("")))
+		f, reflect.ValueOf(""), reflect.ValueOf([]byte("")), &DecodeContext{})
 	if err != nil {
 		t.Fatalf("bad: %s", err)
 	}
@@ -47,7 +47,7 @@ func TestComposeDecodeHookFunc_err(t *testing.T) {
 	f := ComposeDecodeHookFunc(f1, f2)
 
 	_, err := DecodeHookExec(
-		f, reflect.ValueOf(""), reflect.ValueOf([]byte("")))
+		f, reflect.ValueOf(""), reflect.ValueOf([]byte("")), &DecodeContext{})
 	if err.Error() != "foo" {
 		t.Fatalf("bad: %s", err)
 	}
@@ -74,7 +74,7 @@ func TestComposeDecodeHookFunc_kinds(t *testing.T) {
 	f := ComposeDecodeHookFunc(f1, f2)
 
 	_, err := DecodeHookExec(
-		f, reflect.ValueOf(""), reflect.ValueOf([]byte("")))
+		f, reflect.ValueOf(""), reflect.ValueOf([]byte("")), &DecodeContext{})
 	if err != nil {
 		t.Fatalf("bad: %s", err)
 	}
@@ -110,7 +110,7 @@ func TestStringToSliceHookFunc(t *testing.T) {
 	}
 
 	for i, tc := range cases {
-		actual, err := DecodeHookExec(f, tc.f, tc.t)
+		actual, err := DecodeHookExec(f, tc.f, tc.t, &DecodeContext{})
 		if tc.err != (err != nil) {
 			t.Fatalf("case %d: expected err %#v", i, tc.err)
 		}
@@ -138,7 +138,7 @@ func TestStringToTimeDurationHookFunc(t *testing.T) {
 	}
 
 	for i, tc := range cases {
-		actual, err := DecodeHookExec(f, tc.f, tc.t)
+		actual, err := DecodeHookExec(f, tc.f, tc.t, &DecodeContext{})
 		if tc.err != (err != nil) {
 			t.Fatalf("case %d: expected err %#v", i, tc.err)
 		}
@@ -167,7 +167,7 @@ func TestStringToTimeHookFunc(t *testing.T) {
 
 	for i, tc := range cases {
 		f := StringToTimeHookFunc(tc.layout)
-		actual, err := DecodeHookExec(f, tc.f, tc.t)
+		actual, err := DecodeHookExec(f, tc.f, tc.t, &DecodeContext{})
 		if tc.err != (err != nil) {
 			t.Fatalf("case %d: expected err %#v", i, tc.err)
 		}
@@ -195,7 +195,7 @@ func TestStringToIPHookFunc(t *testing.T) {
 
 	for i, tc := range cases {
 		f := StringToIPHookFunc()
-		actual, err := DecodeHookExec(f, tc.f, tc.t)
+		actual, err := DecodeHookExec(f, tc.f, tc.t, &DecodeContext{})
 		if tc.err != (err != nil) {
 			t.Fatalf("case %d: expected err %#v", i, tc.err)
 		}
@@ -228,7 +228,7 @@ func TestStringToIPNetHookFunc(t *testing.T) {
 
 	for i, tc := range cases {
 		f := StringToIPNetHookFunc()
-		actual, err := DecodeHookExec(f, tc.f, tc.t)
+		actual, err := DecodeHookExec(f, tc.f, tc.t, &DecodeContext{})
 		if tc.err != (err != nil) {
 			t.Fatalf("case %d: expected err %#v", i, tc.err)
 		}
@@ -294,7 +294,7 @@ func TestWeaklyTypedHook(t *testing.T) {
 	}
 
 	for i, tc := range cases {
-		actual, err := DecodeHookExec(f, tc.f, tc.t)
+		actual, err := DecodeHookExec(f, tc.f, tc.t, &DecodeContext{})
 		if tc.err != (err != nil) {
 			t.Fatalf("case %d: expected err %#v", i, tc.err)
 		}
