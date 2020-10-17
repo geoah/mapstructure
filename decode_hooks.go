@@ -18,10 +18,11 @@ func typedDecodeHook(h DecodeHookFunc) DecodeHookFunc {
 	var f2 DecodeHookFuncKind
 	var f3 DecodeHookFuncValue
 	var f4 DecodeHookFuncTypeContext
+	var f5 DecodeHookFuncValueContext
 
 	// Fill in the variables into this interface and the rest is done
 	// automatically using the reflect package.
-	potential := []interface{}{f1, f2, f3, f4}
+	potential := []interface{}{f1, f2, f3, f4, f5}
 
 	v := reflect.ValueOf(h)
 	vt := v.Type()
@@ -54,6 +55,8 @@ func DecodeHookExec(
 		return f(from.Kind(), to.Kind(), from.Interface())
 	case DecodeHookFuncValue:
 		return f(from, to)
+	case DecodeHookFuncValueContext:
+		return f(from, to, ctx)
 	default:
 		return nil, errors.New("invalid decode hook signature")
 	}

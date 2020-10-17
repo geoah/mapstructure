@@ -180,12 +180,17 @@ type DecodeHookFuncType func(reflect.Type, reflect.Type, interface{}) (interface
 // the source and target types and additional contextual information about the field.
 type DecodeHookFuncTypeContext func(reflect.Type, reflect.Type, interface{}, *DecodeContext) (interface{}, error)
 
+// DecodeHookFuncValueContext is a DecodeHookFunc which has complete access to
+// both the source and target values and additional contextual information about
+// the field.
+type DecodeHookFuncValueContext func(reflect.Value, reflect.Value, *DecodeContext) (interface{}, error)
+
 // DecodeHookFuncKind is a DecodeHookFunc which knows only the Kinds of the
 // source and target types.
 type DecodeHookFuncKind func(reflect.Kind, reflect.Kind, interface{}) (interface{}, error)
 
-// DecodeHookFuncRaw is a DecodeHookFunc which has complete access to both the source and target
-// values.
+// DecodeHookFuncValue is a DecodeHookFunc which has complete access to both
+// the source and target values.
 type DecodeHookFuncValue func(from reflect.Value, to reflect.Value) (interface{}, error)
 
 // DecoderConfig is the configuration that is used to create a new decoder
